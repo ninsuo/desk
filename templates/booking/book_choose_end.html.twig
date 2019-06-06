@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Desk.{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+
+        <h3>On {{ day|date('D d') }} from {{ start }}, until what time?</h3>
+
+        <div class="row">
+
+            {% for time, desks in ends %}
+                <div class="col-md-2">
+                    <a href="{{ path('book_choose_desk', {id: room.id, day: day, start: start, end: time}) }}"
+                       class="btn btn-primary"
+                       style="width: 100%; margin-top: 10px; margin-bottom: 10px;">
+                        <span style="font-size: 25px;">
+                            {{ time }}
+                        </span>
+                        <br/>
+                        <span style="font-size: 15px;">
+                            {{ desks|length }} desks
+                        </span>
+                    </a>
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <hr/>
+
+        <div class="text-right">
+            <a href="{{ path('book_choose_start', {id: room.id, day: day}) }}">🔙</a>
+        </div>
+    </div>
+
+{% endblock %}

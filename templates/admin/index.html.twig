@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Desk.{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        {% if rooms|length %}
+
+            <h3>Edit a room</h3>
+
+            <div class="text-center">
+
+                {% for room in rooms %}
+
+                    <div style="margin: 10px;">
+                        <a href="{{ path('admin_room', {id: room.id}) }}"
+                           class="btn btn-primary"
+                           style="width: 100%;">{{ room.label }}</a>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <br/><br/>
+
+        {% endif %}
+
+        <h4>Create a new room</h4>
+
+        {{ form(new_room) }}
+
+        <hr/>
+
+        <div class="text-right">
+            <a href="{{ path('index') }}" class="btn btn-default">🔙️</a>
+        </div>
+    </div>
+
+{% endblock %}

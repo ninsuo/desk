@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Desk.{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+
+        <h3>Your booking of <div style="display:inline-block;width:20px;height:20px;background-color:{{ desk.color }};"></div> #{{ desk.number }} on {{ day|date('D d') }} from {{ start }} to {{ end }}</h3>
+
+        <hr/>
+
+        {{ form(form) }}
+
+        <hr/>
+
+        <div class="text-right">
+            <a href="{{ path('book_choose_desk', {id: room.id, day: day, start: start, end: end}) }}">🔙</a>
+        </div>
+    </div>
+
+{% endblock %}

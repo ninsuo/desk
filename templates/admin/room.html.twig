@@ -1,0 +1,291 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <div id="cursor" style="position: absolute;"></div>
+
+    <div style="padding: 20px;">
+
+        <h3>Edit room "{{ room.label }}"</h3>
+
+        <br/>
+
+        <div class="row">
+
+            <div class="col-8">
+
+                <center>
+
+                    <div style="margin-bottom: 10px;">
+                        <a href="#" id="release">Release Mouse</a>
+
+                        &nbsp;&nbsp;
+
+                        <a href="#" id="eraser">Eraser ⌫</a>
+                    </div>
+
+                    <table id="table">
+                        {% for y in 0..room.height %}
+                            <tr>
+                                {% for x in 0..room.width %}
+                                    {% set object = room.at(x, y) %}
+                                    <td class="space {{ object.type|default(false) }}-{{ object.id|default(false) }}"
+                                        data-x="{{ x }}"
+                                        data-y="{{ y }}"
+                                        {% if object.type|default(false) == 'desk' %}
+                                            title="#{{ object.number }}"
+                                        {% endif %}
+                                        data-object="{{ object.type|default(false) }}"
+                                        data-id="{{ object.id|default(false) }}"
+                                        style="{{ macros.style(room) }}background-color: {{ object.color|default(false) }};"></td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </center>
+
+                <br/>
+
+                <div class="text-center">
+                    <a class="btn btn-primary" href="{{ path('admin_room_pdf', {id: room.id}) }}">Download PDF</a>
+                </div>
+
+            </div>
+            <div class="col-2">
+
+                <h4>Manage Desks</h4>
+
+                <a href="{{ path('admin_room_add_desk', {id: room.id}) }}" class="btn btn-primary">Add Desk</a>
+                <br/><br/>
+
+                {% for desk in room.desks %}
+                    <div>
+                        <div>
+                            <a href="#" class="pick-desk" data-desk-id="{{ desk.id }}">Desk #{{ desk.id }}</a>
+                        </div>
+
+                        <input type="text" id="desk-{{ desk.id }}" class="update-desk" data-desk-id="{{ desk.id }}" />
+
+                        <input type="text"
+                               id="desk-nbr-{{ desk.id }}"
+                               class="update-desk"
+                               data-desk-id="{{ desk.id }}"
+                               style="width: 42px;"
+                               value="{{ desk.number }}" />
+
+                        &nbsp;&nbsp;
+
+                        <a href="{{ path('admin_room_remove_desk', {id: desk.id}) }}"
+                           onclick="return confirm('Are you sure?');">🗑</a>
+
+                        <script type="text/javascript">
+                            $('#desk-{{ desk.id }}').spectrum({
+                                color: '{{ desk.color }}',
+                                preferredFormat: 'hex',
+                                showInput: true,
+                            });
+                        </script>
+                    </div>
+
+                    <hr/>
+
+                {% endfor %}
+
+            </div>
+
+            <div class="col-2">
+
+                <h4>Manage Walls</h4>
+
+                <a href="{{ path('admin_room_add_wall', {id: room.id}) }}" class="btn btn-primary">Add Wall</a>
+                <br/><br/>
+
+                {% for wall in room.walls %}
+
+                    <div>
+                        <div>
+                            <a href="#" class="pick-wall" data-wall-id="{{ wall.id }}">Wall #{{ wall.id }}</a>
+                        </div>
+
+                        <input type="text" id="wall-{{ wall.id }}" class="update-wall" data-wall-id="{{ wall.id }}" />
+
+                        &nbsp;&nbsp;
+
+                        <a href="{{ path('admin_room_remove_wall', {id: wall.id}) }}"
+                           onclick="return confirm('Are you sure?');">🗑</a>
+
+                        <script type="text/javascript">
+                            $('#wall-{{ wall.id }}').spectrum({
+                                color: '{{ wall.color }}',
+                                preferredFormat: 'hex',
+                                showInput: true,
+                            });
+                        </script>
+                    </div>
+
+                    <br/>
+
+                {% endfor %}
+
+            </div>
+        </div>
+
+        <hr/>
+
+        <h4>Edit room details</h4>
+
+        {{ form(edit_room) }}
+
+        <hr/>
+
+        {{ form(delete_room, {action: path('admin_room_delete', {id: room.id})}) }}
+
+        <div class="text-right">
+            <a href="{{ path('admin_index') }}" class="btn btn-default">🔙</a>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+
+        $(document).on('mousemove', function(e){
+            if ($('#table').is(':hover')) {
+                $('#cursor').css({
+                    left: e.pageX + 20,
+                    top: e.pageY + 20,
+                });
+            }
+        });
+
+        $('#release').click(function(e) {
+            $('#cursor').html('');
+            e.preventDefault();
+        });
+
+        $('#eraser').click(function(e) {
+            $('#cursor').html('Eraser ⌫');
+            e.preventDefault();
+        });
+
+        {# Change color of a wall #}
+        $('.update-wall').change(function() {
+            var that = $(this);
+
+            $.post('{{ path('admin_room_update_wall') }}', {
+                wall_id: that.data('wall-id'),
+                color: that.val(),
+            }, function() {
+                $('.wall-' + that.data('wall-id')).css('background-color', that.val());
+            });
+        });
+
+        {# Select a wall #}
+        $('.pick-wall').click(function(e) {
+            $('#cursor').html('Wall #' + $(this).data('wall-id'));
+            e.preventDefault();
+        });
+
+        {# Change color or number of a desk #}
+        $('.update-desk').change(function() {
+            var that = $(this);
+            var id = that.data('desk-id');
+            var color = $('#desk-' + id).spectrum('get').toHexString();
+            var number = $('#desk-nbr-' + id).val();
+
+            $.post('{{ path('admin_room_update_desk') }}', {
+                desk_id: id,
+                color: color,
+                number: number,
+            }, function() {
+                $('.desk-' + that.data('desk-id')).css('background-color', color);
+            });
+        });
+
+        $('.pick-desk').click(function(e) {
+            $('#cursor').html('Desk #' + $(this).data('desk-id'));
+            e.preventDefault();
+        });
+
+        $('.space').click(function() {
+            var that = $(this);
+            var cursor = $('#cursor').html();
+
+            {# Add a Wall #}
+            if (cursor.split(' ')[0] == 'Wall') {
+                if (that.data('object')) {
+                    return;
+                }
+
+                var id = cursor.split(' ')[1].substring(1);
+
+                $.post('{{ path('admin_room_place_wall', {id: room.id}) }}', {
+                    wall_id: id,
+                    x: that.data('x'),
+                    y: that.data('y'),
+                }, function() {
+                    that.addClass('wall-' + id);
+                    that.css('background-color', $('#wall-' + id).spectrum('get').toHexString());
+                    that.data('object', 'wall');
+                    that.data('id', id);
+                });
+            }
+
+            {# Add a Desk #}
+            if (cursor.split(' ')[0] == 'Desk') {
+                if (that.data('object')) {
+                    return;
+                }
+
+                var id = cursor.split(' ')[1].substring(1);
+
+                $.post('{{ path('admin_room_place_desk', {id: room.id}) }}', {
+                    desk_id: id,
+                    x: that.data('x'),
+                    y: that.data('y'),
+                }, function() {
+                    that.addClass('desk-' + id);
+                    that.css('background-color', $('#desk-' + id).spectrum('get').toHexString());
+                    that.data('object', 'desk');
+                    that.data('id', id);
+                });
+            }
+
+            if (cursor.split(' ')[0] == 'Eraser') {
+                if (!that.data('object')) {
+                    return;
+                }
+
+                var object = that.data('object');
+
+                {# Remove a wall #}
+                if (object == 'wall') {
+                    $.post('{{ path('admin_room_destroy_wall', {id: room.id}) }}', {
+                        x: that.data('x'),
+                        y: that.data('y'),
+                    }, function() {
+                        that.css('background-color', '');
+                        that.data('object', '');
+                        that.data('id', '');
+                    });
+                }
+
+                {# Remove a desk #}
+                if (object == 'desk') {
+                    $.post('{{ path('admin_room_destroy_desk', {id: room.id}) }}', {
+                        x: that.data('x'),
+                        y: that.data('y'),
+                    }, function() {
+                        that.css('background-color', '');
+                        that.data('object', '');
+                        that.data('id', '');
+                    });
+                }
+            }
+
+        });
+
+    </script>
+
+{% endblock %}

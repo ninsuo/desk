@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Desk.{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+
+        <h3>When do you want to book a desk?</h3>
+
+        <div class="row">
+
+            {% for dayToBook in daysToBook %}
+                <div class="col-md-2">
+                    <a href="{{ path('book_choose_start', {id: room.id, day: dayToBook|date('Y-m-d-H-i')}) }}"
+                       class="btn btn-primary"
+                       style="width: 100%; margin-top: 10px; margin-bottom: 10px;">
+                        <span style="font-size: 25px;">{{ dayToBook|date('D d/m') }}</span>
+                    </a>
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <hr/>
+
+        <h3>Available desks on {{ room.label }}</h3>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th colspan="2">
+                    <div class="text-left">
+                        <a href="{{ path('book_choose_day', {id: room.id, date: previousWeek}) }}">◀</a>
+                    </div>
+                </th>
+                <th colspan="2">
+                    <center>
+                        <span style="font-size:16px;">{{ monthsInWeek|join(' - ') }}</span>
+                    </center>
+                </th>
+                <th colspan="2">
+                    <div class="text-right">
+                        <a href="{{ path('book_choose_day', {id: room.id, date: nextWeek}) }}">▶</a>
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                {% for day in timetable|first|keys %}
+                    <th>{{ day }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for hour, days in timetable %}
+                <tr>
+                    <td>{{ hour|replace({' - ': "\n"})|nl2br }}</td>
+                    {% for day, bookings in days %}
+                        <td>
+                            {{ room.desks|length - bookings|length }}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <hr/>
+
+        <div class="text-right">
+            <a href="{{ path('index') }}">🔙</a>
+            &nbsp;&nbsp;
+            <a href="{{ path('admin_room', {id: room.id}) }}">🛠</a>
+        </div>
+    </div>
+
+{% endblock %}

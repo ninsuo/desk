@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Desk.{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+
+        <h3>On {{ day|date('D d') }} from what time?</h3>
+
+        <div class="row">
+
+            {% for time, bookings in starts if room.desks|length - bookings|length > 0 %}
+                <div class="col-md-2">
+                    <a href="{{ path('book_choose_end', {id: room.id, day: day, start: time}) }}"
+                       class="btn btn-primary"
+                       style="width: 100%; margin-top: 10px; margin-bottom: 10px;">
+                        <span style="font-size: 25px;">
+                            {{ time }}
+                        </span>
+                        <br/>
+                        <span style="font-size: 15px;">
+                            {{ room.desks|length - bookings|length }} desks
+                        </span>
+                    </a>
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <hr/>
+
+        <div class="text-right">
+            <a href="{{ path('book_choose_day', {id: room.id}) }}">🔙</a>
+        </div>
+    </div>
+
+{% endblock %}

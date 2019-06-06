@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Desk.{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <h3>Booking confirmation</h3>
+
+        <center>
+            {% if not booking %}
+
+                <div style="margin-top:20px;margin-bottom:20px;">
+                    This desk is currently available.
+                </div>
+
+            {% else %}
+
+                <div style="margin-top:20px;margin-bottom:20px;">
+                    This desk is booked by {{ booking.person|default('Board') }} until {{ booking.end|date('H:i') }}.
+                </div>
+
+                {% if booking.person and not booking.confirmed %}
+
+                    <div style="margin: 10px;">
+                        <a href="{{ path('do_confirm', {id: booking.id, csrf: csrf_token('confirm')}) }}"
+                           class="btn btn-danger"
+                           style="width: 80%;">
+                            Please confirm your booking.
+                            <br/><br/>
+                            <strong>
+                                I am {{ booking.person }}
+                            </strong>
+                        </a>
+                    </div>
+
+                {% endif %}
+
+            {% endif %}
+        </center>
+
+    </div>
+
+{% endblock %}

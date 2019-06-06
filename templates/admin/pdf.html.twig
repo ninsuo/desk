@@ -1,0 +1,24 @@
+
+<table>
+    {% set i = 0 %}
+    {% for number, qrCode in qrCodes|reverse(true) %}
+
+        {% if i % 3 == 0 %}
+            <tr>
+        {% endif %}
+
+            <td style="text-align:center;">
+                <img src="{{ qrCode }}" />
+                <div style="font-size:50px;">{{ number }}</div>
+            </td>
+
+        {% if i % 3 == 2 %}
+            </tr>
+            <tr><td colspan="3"><br/></td></tr>
+        {% endif %}
+
+        {% set i = i + 1 %}
+    {% endfor %}
+</tr>
+
+</table>

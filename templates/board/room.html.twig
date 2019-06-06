@@ -1,0 +1,133 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{# Colors #}
+{#
+{% set free_all_day = '#CCCCFF' %}
+{% set free_now = '#BBFFBB' %}
+{% set busy_soon  = '#FFFFAA' %}
+{% set busy = '#FFCCCC' %}
+#}
+{% set free_all_day = '#FFFFFF' %}
+{% set free_now = '#CDDADD' %}
+{% set busy_soon  = '#EBFDE1' %}
+{% set busy = '#FDD9DE' %}
+
+{% block body %}
+
+    <div style="padding: 20px;">
+
+        <h3>{{ room.label }}</h3>
+
+        <br/>
+
+        <center>
+            <table id="table">
+                {% for y in 0..room.height %}
+                    <tr>
+                        {% for x in 0..room.width %}
+                            {% set object = room.at(x, y) %}
+                            <td class="space {{ object.type|default(false) }} {{ object.type|default(false) }}-{{ object.id|default(false) }}"
+                                data-x="{{ x }}"
+                                data-y="{{ y }}"
+                                data-object="{{ object.type|default(false) }}"
+                                data-id="{{ object.id|default(false) }}"
+                                {% if object.type|default(false) == 'desk' %}
+                                    data-url="{{ path('bookings', {id: object.id}) }}"
+                                    data-toggle="modal"
+                                    data-target="#modal"
+                                {% endif %}
+                                style="{{ macros.style(room) }}{{ room.border(x, y) }}"></td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <br/>
+
+            <div style="border:1px solid grey;display:inline-block;width:25px;height:25px;background-color:{{ busy }};"></div> Busy now
+            &nbsp;&nbsp;&nbsp;
+            <div style="border:1px solid grey;display:inline-block;width:25px;height:25px;background-color:{{ busy_soon }};"></div> Busy soon
+            &nbsp;&nbsp;&nbsp;
+            <div style="border:1px solid grey;display:inline-block;width:25px;height:25px;background-color:{{ free_now }};"></div> Free now
+            &nbsp;&nbsp;&nbsp;
+            <div style="border:1px solid grey;display:inline-block;width:25px;height:25px;background-color:{{ free_all_day }};"></div> Free today
+
+        </center>
+        <hr/>
+
+        <div class="row">
+            {% for desk in room.sortedDesks %}
+
+                <div class="col-1">
+                    <div style="display:inline-block;width:25px;height:25px;background-color:{{ desk.color }};"></div>
+
+                    Desk #{{ desk.number }}
+                    <br/>
+
+                    <div id="desk-status-{{ desk.id }}"></div>
+
+                    <br/><br/>
+
+                </div>
+            {% endfor %}
+        </div>
+
+        <hr/>
+
+        <div class="text-right">
+            <a href="{{ path('index') }}" class="btn btn-default">🔙</a>
+            &nbsp;&nbsp;
+            <a href="{{ path('admin_room', {id: room.id}) }}">🛠</a>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+        <div class="modal-dialog" id="modal-contents" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Bookings</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        var colors = {
+            'free_all_day': '{{ free_all_day }}',
+            'free_now': '{{ free_now }}',
+            'busy_soon': '{{ busy_soon }}',
+            'busy': '{{ busy }}',
+        };
+
+        setInterval(function() {
+            $.post('{{ path('status', {id: room.id}) }}', function(data) {
+                $.each(data, function(deskId) {
+                    var that = this;
+                    $('.desk-' + deskId).css('background-color', colors[that.status]);
+                    $('#desk-status-' + deskId).html(that.label);
+                });
+            });
+        }, 3000);
+
+        $('.desk').click(function() {
+            $.post($(this).data('url'), function(result) {
+                $('#modal-contents').html(result);
+            });
+        });
+
+    </script>
+
+{% endblock %}

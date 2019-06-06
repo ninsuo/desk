@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Desk.{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+
+        {% if rooms|length %}
+
+            <h3>Book a desk</h3>
+
+            <div class="text-center">
+
+                {% for room in rooms %}
+
+                    <div style="margin: 10px;">
+                        <a href="{{ path('book_choose_day', {id: room.id}) }}"
+                           class="btn btn-primary"
+                           style="width: 100%;">{{ room.label }}</a>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <br/><br/>
+
+            <hr/>
+
+            <h3>Access dashboards</h3>
+
+            <div class="text-center">
+
+                {% for room in rooms %}
+
+                    <div style="margin: 10px;">
+                        <a href="{{ path('room', {id: room.id}) }}"
+                           class="btn btn-primary"
+                           style="width: 100%;">{{ room.label }}</a>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <br/><br/>
+
+        {% endif %}
+
+        <hr>
+
+        <div class="text-right">
+            <a href="{{ path('admin_index') }}">🛠</a>
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Desk.{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+
+        <h3>So you need a desk on {{ day|date('D d') }} from {{ start }} to {{ end }}, do you prefer a specific desk?</h3>
+
+        <p>Click <a href="{{ path('room', {id: room.id}) }}" target="_blank">here</a> to have a look to the map in a new window.</p>
+
+        <div class="row">
+
+            {% for desk in desks %}
+                <div class="col-md-2">
+                    <a href="{{ path('book_choose_name', {id: room.id, day: day, start: start, end: end, deskNumber: desk.number}) }}"
+                       class="btn btn-primary"
+                       style="width: 100%; margin-top: 10px; margin-bottom: 10px;">
+                        <div style="display:inline-block;width:20px;height:20px;background-color:{{ desk.color }};"></div>
+                        &nbsp;&nbsp;
+                        <span style="font-size: 25px;">
+                            #{{ desk.number }}
+                        </span>
+                    </a>
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <hr/>
+
+        <div class="text-right">
+            <a href="{{ path('book_choose_end', {id: room.id, day: day, start: start}) }}">🔙</a>
+        </div>
+    </div>
+
+{% endblock %}
