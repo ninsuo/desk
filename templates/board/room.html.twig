@@ -23,7 +23,7 @@
         <br/>
 
         <center>
-            <table id="table" style="border-collapse: separate !important;border-spacing:0px;">
+            <table id="table" style="border-collapse:separate!important;border-spacing:0px;">
                 {% for y in 0..room.height %}
                     <tr>
                         {% for x in 0..room.width %}
@@ -39,7 +39,7 @@
                                     data-target="#modal"
                                     style=" {{ macros.style(room) }};background:{{ object.color }};border-style:solid;border-width:{{ room.border(x, y) }};border-color:#FFFFFF;"
                                 {% elseif object %}
-                                    style="{{ macros.style(room) }};border-style:solid;border-width:{{ room.border(x, y) }};border-color:{{ object.color }};"
+                                    style="{{ macros.style(room) }};border-style:solid;border-width:{{ room.border(x, y) }};border-color:{{ object.color }};background:{{ object.color }};"
                                 {% endif %}
                             ></td>
                         {% endfor %}
@@ -115,7 +115,7 @@
             'busy': '{{ busy }}',
         };
 
-        setInterval(function() {
+        function refreshStatuses() {
             $.post('{{ path('status', {id: room.id, date: date}) }}', function(data) {
                 $.each(data, function(deskId) {
                     var that = this;
@@ -123,7 +123,10 @@
                     $('#desk-status-' + deskId).html(that.label);
                 });
             });
-        }, 3000);
+        }
+
+        setInterval('refreshStatuses', 3000);
+        refreshStatuses();
 
         $('.desk').click(function() {
             $.post($(this).data('url'), function(result) {
