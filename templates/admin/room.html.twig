@@ -39,7 +39,7 @@
                                         {% endif %}
                                         data-object="{{ object.type|default(false) }}"
                                         data-id="{{ object.id|default(false) }}"
-                                        style="{{ macros.style(room) }}background-color: {{ object.color|default(false) }};"></td>
+                                        style="border:1px solid black;{{ macros.style(room) }}background-color: {{ object.color|default(false) }};"></td>
                                 {% endfor %}
                             </tr>
                         {% endfor %}

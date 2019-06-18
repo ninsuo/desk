@@ -12,10 +12,8 @@ use App\Services\BookingService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpFoundation\Session\Storage\SessionStorageInterface;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -132,7 +130,7 @@ class BookingController extends BaseController
                 'required' => true,
                 'constraints' => [
                     new NotBlank(),
-                    new Callback(function($payload, ExecutionContextInterface $context) use ($desk, $startDate, $endDate) {
+                    new Callback(function ($payload, ExecutionContextInterface $context) use ($desk, $startDate, $endDate) {
                         if (count($this->bookingRepository->getDeskBookingsBetween($desk, $startDate, $endDate))) {
                             $context->buildViolation('Oops, it seems that someone just booked that desk...')
                                     ->atPath('name')
@@ -180,7 +178,7 @@ class BookingController extends BaseController
         $this->session->set('desk', $desk->getId());
 
         return $this->redirectToRoute('confirm_page', [
-            'date' => '2019-06-18-08-30',
+            'date' => $date,
         ]);
     }
 

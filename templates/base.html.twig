@@ -47,11 +47,22 @@
     </head>
     <body>
         <div>
+            {% set count = 0 %}
             {% for label, messages in app.flashes %}
                 {% for message in messages %}
-                    <div style="font-size:25px;margin:10px;padding:10px;color:white;text-align:center;" class="bg-primary">{{ message }}</div>
+                    <div style="font-size:25px;margin:10px;padding:10px;color:white;text-align:center;" class="bg-primary flash">{{ message }}</div>
+                    {% set count = count + 1 %}
                 {% endfor %}
             {% endfor %}
+            {% if count %}
+                <script type="text/javascript">
+
+                    setTimeout(function() {
+                        $('.flash').fadeOut();
+                    }, 5000);
+
+                </script>
+            {% endif %}
 
             {% block body %}{% endblock %}
             {% block javascripts %}{% endblock %}

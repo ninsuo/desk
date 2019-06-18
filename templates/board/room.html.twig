@@ -10,9 +10,9 @@
 {% set busy = '#FFCCCC' %}
 #}
 {% set free_all_day = '#FFFFFF' %}
-{% set free_now = '#CDDADD' %}
-{% set busy_soon  = '#EBFDE1' %}
-{% set busy = '#FDD9DE' %}
+{% set free_now = '#28cff5' %}
+{% set busy_soon  = '#FFEE1D' %}
+{% set busy = '#FF7211' %}
 
 {% block body %}
 
@@ -23,7 +23,7 @@
         <br/>
 
         <center>
-            <table id="table">
+            <table id="table" style="border-collapse: separate !important;border-spacing:0px;">
                 {% for y in 0..room.height %}
                     <tr>
                         {% for x in 0..room.width %}
@@ -37,8 +37,11 @@
                                     data-url="{{ path('bookings', {id: object.id}) }}"
                                     data-toggle="modal"
                                     data-target="#modal"
+                                    style=" {{ macros.style(room) }};background:{{ object.color }};border-style:solid;border-width:{{ room.border(x, y) }};border-color:#FFFFFF;"
+                                {% elseif object %}
+                                    style="{{ macros.style(room) }};border-style:solid;border-width:{{ room.border(x, y) }};border-color:{{ object.color }};"
                                 {% endif %}
-                                style="{{ macros.style(room) }}{{ room.border(x, y) }}"></td>
+                            ></td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
@@ -116,7 +119,7 @@
             $.post('{{ path('status', {id: room.id}) }}', function(data) {
                 $.each(data, function(deskId) {
                     var that = this;
-                    $('.desk-' + deskId).css('background-color', colors[that.status]);
+                    $('.desk-' + deskId).css('border-color', colors[that.status]);
                     $('#desk-status-' + deskId).html(that.label);
                 });
             });

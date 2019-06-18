@@ -194,15 +194,23 @@ class Room
         /* @var ObjectInterface $at */
         $at = $this->at($x, $y);
         if (null === $at) {
-            return 'border: none';
+            return '0px';
         }
 
+        // border-width: top right bototm left;
         $style = '';
 
-        $style .= sprintf('border-left: %dpx solid %s;', 5 * intval($x == 0 || !$at->isEqualTo($this->at($x - 1, $y))), $at->getColor());
-        $style .= sprintf('border-right: %dpx solid %s;', 5 * intval($x == $this->width || !$at->isEqualTo($this->at($x + 1, $y))), $at->getColor());
-        $style .= sprintf('border-top: %dpx solid %s;', 5 * intval($y == 0 || !$at->isEqualTo($this->at($x, $y - 1))), $at->getColor());
-        $style .= sprintf('border-bottom: %dpx solid %s;', 5 * intval($y == $this->height || !$at->isEqualTo($this->at($x, $y + 1))), $at->getColor());
+        // top
+        $style .= sprintf('%dpx ', 5 * intval($y == 0 || !$at->isEqualTo($this->at($x, $y - 1))));
+
+        // right
+        $style .= sprintf('%dpx ', 5 * intval($x == $this->width || !$at->isEqualTo($this->at($x + 1, $y))));
+
+        // bottom
+        $style .= sprintf('%dpx ', 5 * intval($y == $this->height || !$at->isEqualTo($this->at($x, $y + 1))));
+
+        // left
+        $style .= sprintf('%dpx ', 5 * intval($x == 0 || !$at->isEqualTo($this->at($x - 1, $y))));
 
         return $style;
     }
