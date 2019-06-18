@@ -57,8 +57,12 @@ class BookingService
                     continue;
                 }
 
+                if ($booking->getEnd()->getTimestamp() < $time->getTimestamp()) {
+                    continue;
+                }
+
                 $bookings[$hours] = reset($days[$dayString]);
-            } else if ($withEmptySpots && $current->getTimestamp() >= $time->getTimestamp()) {
+            } else if ($withEmptySpots && $current->getTimestamp() >= $time->getTimestamp() - 3600) {
                 $bookings[$hours] = null;
             }
         }
@@ -188,11 +192,25 @@ class BookingService
 
     public function getAvailableStartHours(Room $room, \DateTime $date) : array
     {
+        $date->setTime(0, 0, 0);
+        if ($date->getTimestamp() > time()) {
+            $date->setTime(8, 0, 0);
+        } else {
+            $date->setTimestamp(time());
+        }
+
         $timetable = $this->getRoomTimetable($room, $date);
         $hours = [];
 
         foreach ($timetable as $hour => $days) {
-            $hours[substr($hour, 0, 5)] = $days[$date->format('D d')];
+            $hour = substr($hour, 0, 5);
+
+            $meetingTime = (clone $date)->setTime(substr($hour, 0, 2), substr($hour, 3, 2), 1);
+            if ($meetingTime->getTimestamp() < $date->getTimestamp()) {
+                continue ;
+            }
+
+            $hours[$hour] = $days[$date->format('D d')];
         }
 
         return $hours;

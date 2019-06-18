@@ -9,7 +9,7 @@
         <center>
         {% for time, slot in slots %}
             {% if not slot %}
-                <a href="{{ path('book_now', {id: desk.id, slot: time}) }}"
+                <a href="{{ path('book_now', {id: desk.id, date: date, slot: time}) }}"
                    class="btn btn-primary"
                    style="width: 80%; margin-top: 10px; margin-bottom: 10px; color:white; text-align:center;" class="bg-secondary">
                     <span style="font-size: 18px;">{{ time|replace({'-': '➡️'}) }}</span>

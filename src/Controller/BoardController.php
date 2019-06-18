@@ -26,12 +26,13 @@ class BoardController extends BaseController
     }
 
     /**
-     * @Route("/room/{id}", name="room")
+     * @Route("/room/{id}/{date}", name="room", defaults={"date" = null})
      */
-    public function room(Room $room)
+    public function room(Room $room, ?string $date)
     {
         return $this->render('board/room.html.twig', [
             'room' => $room,
+            'date' => $this->getDate($date)->format('Y-m-d-H-i'),
         ]);
     }
 
@@ -51,24 +52,25 @@ class BoardController extends BaseController
     }
 
     /**
-     * @Route("/bookings/{id}", name="bookings")
+     * @Route("/bookings/{id}/{date}", name="bookings", defaults={"date" = null})
      */
-    public function getBookings(Desk $desk)
+    public function getBookings(Desk $desk, ?string $date)
     {
-        $date = $this->getDate(null);
+        $date = $this->getDate($date);
 
         return $this->render('board/bookings.html.twig', [
             'desk' => $desk,
             'slots' => $this->bookingService->getNextBookingsOfTheDay($desk, $date, true),
+            'date' => $date->format('Y-m-d-H-i'),
         ]);
     }
 
     /**
-     * @Route("/book-now/{id}/{slot}", name="book_now")
+     * @Route("/book-now/{id}/{date}/{slot}", name="book_now")
      */
-    public function bookNow(Desk $desk, string $slot)
+    public function bookNow(Desk $desk, string $date, string $slot)
     {
-        $date = $this->getDate(null);
+        $date = $this->getDate($date);
 
         $startDate = (clone $date)->setTime(substr($slot, 0, 2), substr($slot, 3, 2), 1);
         $endDate = (clone $date)->setTime(substr($slot, 8, 2), substr($slot, 11, 2), 0);
@@ -93,6 +95,7 @@ class BoardController extends BaseController
 
         return $this->redirectToRoute('room', [
             'id' => $desk->getRoom()->getId(),
+            'date' => $date->format('Y-m-d-H-i'),
         ]);
     }
 }

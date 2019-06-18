@@ -34,7 +34,7 @@
                                 data-object="{{ object.type|default(false) }}"
                                 data-id="{{ object.id|default(false) }}"
                                 {% if object.type|default(false) == 'desk' %}
-                                    data-url="{{ path('bookings', {id: object.id}) }}"
+                                    data-url="{{ path('bookings', {id: object.id, date: date}) }}"
                                     data-toggle="modal"
                                     data-target="#modal"
                                     style=" {{ macros.style(room) }};background:{{ object.color }};border-style:solid;border-width:{{ room.border(x, y) }};border-color:#FFFFFF;"
@@ -116,7 +116,7 @@
         };
 
         setInterval(function() {
-            $.post('{{ path('status', {id: room.id}) }}', function(data) {
+            $.post('{{ path('status', {id: room.id, date: date}) }}', function(data) {
                 $.each(data, function(deskId) {
                     var that = this;
                     $('.desk-' + deskId).css('border-color', colors[that.status]);
