@@ -139,7 +139,9 @@ class BookingController extends BaseController
                     }),
                 ],
             ])
-            ->add('book', SubmitType::class)
+            ->add('book', SubmitType::class, [
+                'label' => 'Save my booking'
+            ])
             ->getForm()
             ->handleRequest($request);
 

@@ -201,7 +201,7 @@ class BookingService
         if ($date->getTimestamp() > time()) {
             $date->setTime(8, 0, 0);
         } else {
-            $date->setTimestamp(time());
+            $date->setTimestamp(time() - time() % 3600);
         }
 
         $timetable = $this->getRoomTimetable($room, $date);
