@@ -125,7 +125,9 @@
             });
         }
 
-        setInterval('refreshStatuses', 3000);
+        setInterval(function() {
+            refreshStatuses();
+        }, 3000);
         refreshStatuses();
 
         $('.desk').click(function() {
