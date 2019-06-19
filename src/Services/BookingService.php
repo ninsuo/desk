@@ -61,7 +61,12 @@ class BookingService
                     continue;
                 }
 
-                $bookings[$hours] = reset($days[$dayString]);
+                if ($booking->getEnd()->getTimestamp() > $time->getTimestamp()
+                    && $current->getTimestamp() + 3600 < $time->getTimestamp()) {
+                    continue;
+                }
+
+                $bookings[$hours] = $booking;
             } else if ($withEmptySpots && $current->getTimestamp() >= $time->getTimestamp() - 3600) {
                 $bookings[$hours] = null;
             }
